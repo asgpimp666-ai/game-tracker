@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GameTracker</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Секция авторизации -->
+    <section id="auth-section" class="auth-section">
+        <div class="auth-container">
+            <div class="auth-logo">
+                <i class="fas fa-gamepad"></i>
+                <h1>GameTracker</h1>
+            </div>
+            
+            <div class="auth-form">
+                <input type="email" id="email" class="auth-input" placeholder="Email" required>
+                <input type="password" id="password" class="auth-input" placeholder="Пароль" required>
+                
+                <div class="auth-buttons">
+                    <button id="login-btn" class="btn btn-primary">
+                        <i class="fas fa-sign-in-alt"></i> Войти
+                    </button>
+                    <button id="register-btn" class="btn btn-secondary">
+                        <i class="fas fa-user-plus"></i> Регистрация
+                    </button>
+                </div>
+                
+                <p style="text-align: center; margin-top: 1.5rem; color: var(--text-secondary); font-size: 0.875rem;">
+                    Трекер игр с парсингом обложек из Steam, Xbox, PlayStation и других магазинов
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Главный интерфейс -->
+    <div id="main-content" class="main-content" style="display: none;">
+        <!-- Шапка -->
+        <header class="app-header">
+            <div class="header-left">
+                <button id="menu-toggle" class="menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1 class="app-title">GameTracker</h1>
+            </div>
+            
+            <div class="header-right">
+                <button id="add-game-btn" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Добавить игру
+                </button>
+                <button id="search-btn" class="icon-btn">
+                    <i class="fas fa-search"></i>
+                </button>
+                <div id="user-avatar" class="user-avatar">U</div>
+            </div>
+        </header>
+
+        <!-- Сайдбар -->
+        <aside id="app-sidebar" class="app-sidebar">
+            <div class="user-info">
+                <div id="user-avatar-large" class="user-avatar-large">U</div>
+                <div class="user-details">
+                    <h4 id="user-name">Пользователь</h4>
+                    <p id="user-email">user@example.com</p>
+                </div>
+            </div>
+            
+            <nav class="nav-sections">
+                <a href="#" class="nav-item active" data-section="games">
+                    <i class="fas fa-gamepad"></i>
+                    <span>Мои игры</span>
+                </a>
+                <a href="#" class="nav-item" data-section="wishlist">
+                    <i class="fas fa-heart"></i>
+                    <span>Хочу поиграть</span>
+                </a>
+                <a href="#" class="nav-item" data-section="completed">
+                    <i class="fas fa-trophy"></i>
+                    <span>Пройдено</span>
+                </a>
+                <a href="#" class="nav-item" data-section="friends">
+                    <i class="fas fa-users"></i>
+                    <span>Друзья</span>
+                </a>
+                <a href="#" class="nav-item" data-section="settings">
+                    <i class="fas fa-cog"></i>
+                    <span>Настройки</span>
+                </a>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <button id="logout-btn" class="btn btn-secondary" style="width: 100%;">
+                    <i class="fas fa-sign-out-alt"></i> Выйти
+                </button>
+            </div>
+        </aside>
+
+        <!-- Основной контент -->
+        <main class="app-main">
+            <!-- Секция: Мои игры -->
+            <section id="games-section" class="content-section active">
+                <div class="section-header">
+                    <h2>Мои игры</h2>
+                </div>
+                
+                <div class="section-tabs">
+                    <button class="tab-btn active" data-filter="all">Все игры</button>
+                    <button class="tab-btn" data-filter="playing">Играю сейчас</button>
+                    <button class="tab-btn" data-filter="planned">В планах</button>
+                    <button class="tab-btn" data-filter="completed">Пройдено</button>
+                </div>
+                
+                <div class="stats-cards">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-gamepad"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Всего игр</h3>
+                            <div class="stat-value" id="total-games">0</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-play"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Играю сейчас</h3>
+                            <div class="stat-value" id="playing-games">0</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Пройдено</h3>
+                            <div class="stat-value" id="completed-games">0</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>В планах</h3>
+                            <div class="stat-value" id="planned-games">0</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="games-grid" class="games-grid">
+                    <!-- Игры будут загружены здесь -->
+                </div>
+            </section>
+
+            <!-- Секция: Хочу поиграть -->
+            <section id="wishlist-section" class="content-section">
+                <div class="section-header">
+                    <h2>Хочу поиграть</h2>
+                </div>
+                
+                <div id="wishlist-grid" class="games-grid">
+                    <div class="empty-state">
+                        <i class="fas fa-heart"></i>
+                        <p>Список желаний пуст</p>
+                        <p style="font-size: 0.875rem; margin-top: 0.5rem; color: var(--text-secondary);">
+                            Добавьте игры, которые хотите попробовать
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Секция: Пройдено -->
+            <section id="completed-section" class="content-section">
+                <div class="section-header">
+                    <h2>Пройдено</h2>
+                </div>
+                
+                <div id="completed-grid" class="games-grid">
+                    <div class="empty-state">
+                        <i class="fas fa-trophy"></i>
+                        <p>Нет пройденных игр</p>
+                        <p style="font-size: 0.875rem; margin-top: 0.5rem; color: var(--text-secondary);">
+                            Отмечайте игры как пройденные, когда закончите их
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Секция: Друзья -->
+            <section id="friends-section" class="content-section">
+                <div class="section-header">
+                    <h2>Друзья</h2>
+                </div>
+                
+                <div class="friends-grid">
+                    <div class="friend-card">
+                        <div class="friend-avatar">JD</div>
+                        <div class="friend-info">
+                            <div class="friend-name">John Doe</div>
+                            <div class="friend-status">
+                                <i class="fas fa-circle" style="color: var(--accent); font-size: 0.625rem;"></i>
+                                Сейчас играет в Cyberpunk 2077
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="text-align: center; margin-top: 2rem;">
+                    <button class="btn btn-primary">
+                        <i class="fas fa-user-plus"></i> Добавить друга
+                    </button>
+                </div>
+            </section>
+
+            <!-- Секция: Настройки -->
+            <section id="settings-section" class="content-section">
+                <div class="section-header">
+                    <h2>Настройки</h2>
+                </div>
+                
+                <div class="settings-content">
+                    <div class="setting-group">
+                        <h3>Загрузка изображений</h3>
+                        
+                        <div class="setting-card">
+                            <label style="display: block; margin-bottom: 0.5rem; color: var(--text-primary);">
+                                <i class="fas fa-key"></i> ImgBB API ключ
+                            </label>
+                            <input type="text" id="imgbb-api-key" 
+                                   placeholder="Введите ваш API ключ ImgBB" 
+                                   class="modal-input">
+                            <p class="setting-description">
+                                <a href="https://api.imgbb.com/" target="_blank">
+                                    <i class="fas fa-external-link-alt"></i> Получить бесплатный ключ
+                                </a>
+                            </p>
+                            <button id="save-imgbb-key" class="btn btn-primary" style="margin-top: 1rem;">
+                                <i class="fas fa-save"></i> Сохранить ключ
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="setting-group">
+                        <h3>Темы оформления</h3>
+                        
+                        <div class="themes-grid">
+                            <div class="theme-card active" data-theme="xbox">
+                                <div class="theme-preview" style="background: linear-gradient(135deg, #107c10, #0e700e);">
+                                    <i class="fab fa-xbox"></i>
+                                </div>
+                                <div class="theme-info">
+                                    <h4>Xbox</h4>
+                                    <p>Зеленая тема</p>
+                                </div>
+                            </div>
+                            
+                            <div class="theme-card" data-theme="playstation">
+                                <div class="theme-preview" style="background: linear-gradient(135deg, #0066cc, #003399);">
+                                    <i class="fab fa-playstation"></i>
+                                </div>
+                                <div class="theme-info">
+                                    <h4>PlayStation</h4>
+                                    <p>Синяя тема</p>
+                                </div>
+                            </div>
+                            
+                            <div class="theme-card" data-theme="nintendo">
+                                <div class="theme-preview" style="background: linear-gradient(135deg, #e60012, #b3000e);">
+                                    <i class="fas fa-gamepad"></i>
+                                </div>
+                                <div class="theme-info">
+                                    <h4>Nintendo</h4>
+                                    <p>Красная тема</p>
+                                </div>
+                            </div>
+                            
+                            <div class="theme-card" data-theme="steam">
+                                <div class="theme-preview" style="background: linear-gradient(135deg, #1b2838, #2a475e);">
+                                    <i class="fab fa-steam"></i>
+                                </div>
+                                <div class="theme-info">
+                                    <h4>Steam</h4>
+                                    <p>Темная тема</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Модальное окно: Добавление игры -->
+    <div id="add-game-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Добавить игру</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Название игры *</label>
+                    <input type="text" id="game-name" class="modal-input" placeholder="Введите название игры" required>
+                </div>
+                <!-- В модальном окне добавления игры, после поля названия -->
+                <div class="form-group">
+                    <label class="form-label">Тип игры</label>
+                    <div class="game-type-selector">
+                        <button type="button" class="game-type-btn active" data-type="video">
+                            <i class="fas fa-gamepad"></i> Видеоигра
+                        </button>
+                        <button type="button" class="game-type-btn" data-type="board">
+                            <i class="fas fa-chess-board"></i> Настольная игра
+                        </button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Статус</label>
+                    <select id="game-status" class="modal-input">
+                        <option value="playing">🎮 Играю сейчас</option>
+                        <option value="planned">⏰ В планах</option>
+                        <option value="completed">✅ Пройдено</option>
+                        <option value="dropped">❌ Брошено</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Платформы</label>
+                    <div class="platform-tags">
+                        <span class="platform-tag" data-platform="pc">
+                            <i class="fas fa-desktop"></i> PC
+                        </span>
+                        <span class="platform-tag" data-platform="ps5">
+                            <i class="fab fa-playstation"></i> PS5
+                        </span>
+                        <span class="platform-tag" data-platform="xbox">
+                            <i class="fab fa-xbox"></i> Xbox
+                        </span>
+                        <span class="platform-tag" data-platform="switch">
+                            <i class="fas fa-gamepad"></i> Switch
+                        </span>
+                        <span class="platform-tag" data-platform="ps4">
+                            <i class="fab fa-playstation"></i> PS4
+                        </span>
+                        <span class="platform-tag" data-platform="mobile">
+                            <i class="fas fa-mobile-alt"></i> Mobile
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Обложка игры</label>
+                    
+                    <div class="image-source-tabs">
+                        <button type="button" class="source-tab active" data-source="url">
+                            <i class="fas fa-link"></i> Ссылка
+                        </button>
+                        <button type="button" class="source-tab" data-source="search">
+                            <i class="fas fa-search"></i> Поиск
+                        </button>
+                        <button type="button" class="source-tab" data-source="upload">
+                            <i class="fas fa-upload"></i> Загрузка
+                        </button>
+                    </div>
+                    
+                    <div id="url-source-container" style="display: block;">
+                        <input type="text" id="game-image-url" 
+                               class="modal-input" 
+                               placeholder="Введите URL изображения">
+                    </div>
+                    
+                    <div id="image-search-container" style="display: none;">
+                        <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+                            <input type="text" id="game-search-input" 
+                                   placeholder="Введите название игры..." 
+                                   class="modal-input" style="flex: 1;">
+                            <button id="search-game-btn" class="btn btn-primary">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                        
+                        <div style="margin-bottom: 1rem;">
+                            <label style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary);">
+                                Источник поиска:
+                            </label>
+                            <div class="platform-tags">
+                                <span class="platform-tag active" data-source="all">
+                                    <i class="fas fa-globe"></i> Все
+                                </span>
+                                <span class="platform-tag" data-source="steam">
+                                    <i class="fab fa-steam"></i> Steam
+                                </span>
+                                <span class="platform-tag" data-source="xbox">
+                                    <i class="fab fa-xbox"></i> Xbox
+                                </span>
+                                <span class="platform-tag" data-source="playstation">
+                                    <i class="fab fa-playstation"></i> PlayStation
+                                </span>
+                                <span class="platform-tag" data-source="nintendo">
+                                    <i class="fas fa-gamepad"></i> Nintendo
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div id="search-results" class="search-results-grid">
+                            <div class="empty-state" style="grid-column: 1 / -1; padding: 2rem;">
+                                <i class="fas fa-search"></i>
+                                <p style="font-size: 0.875rem;">Введите название игры для поиска обложек</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="upload-source-container" style="display: none;">
+                        <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+                            <input type="file" id="game-image-upload" accept="image/*" style="display: none;">
+                            <button id="upload-image-btn" class="btn btn-secondary" style="flex: 1;">
+                                <i class="fas fa-upload"></i> Выбрать файл
+                            </button>
+                        </div>
+                        <p class="setting-description">
+                            Поддерживаются форматы: JPG, PNG, GIF. Максимальный размер: 5MB
+                        </p>
+                    </div>
+                    
+                    <div class="image-preview-container">
+                        <img id="image-preview" src="" alt="Превью" class="image-preview">
+                        <p id="image-source-info" class="image-source-info" style="display: none;">
+                            Источник: <span id="image-source"></span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button class="btn btn-secondary modal-close">Отмена</button>
+                <button id="save-game-btn" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Сохранить игру
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="app.js"></script>
+</body>
+</html>
