@@ -64,35 +64,45 @@ let currentUploadFile = null;
 // ====================
 // УТИЛИТЫ ДЛЯ API
 // ====================
+const BGG_PROXY_URL = 'https://game-tracker-fwhqjtm03-asgpimp666-ais-projects.vercel.app/api/bgg?url=';
+
 async function fetchWithRetry(url, options = {}, retries = 3) {
-  // Используем CORS прокси
-  const corsUrl = `${API_CONFIG.CORS_PROXY_2}${encodeURIComponent(url)}`; // ← corsproxy.io
+  // Используем собственный прокси ТОЛЬКО для BoardGameGeek
+  if (url.includes('boardgamegeek.com')) {
+    for (let attempt = 0; attempt <= retries; attempt++) {
+      const proxyUrl = BGG_PROXY_URL + encodeURIComponent(url);
+      try {
+        const response = await fetch(proxyUrl, options);
 
-  for (let attempt = 0; attempt <= retries; attempt++) {
-    try {
-      const response = await fetch(corsUrl, options);
+        // Обрабатываем статус 202 Accepted
+        if (response.status === 202) {
+          console.log(`BGG вернул 202. Ждём 5 сек... (попытка ${attempt + 1})`);
+          await new Promise(r => setTimeout(r, 5000));
+          continue;
+        }
 
-      // Если BGG говорит "повторите позже"
-      if (response.status === 202) {
-        console.log(`Получен статус 202 от BGG. Повтор через 5 секунд... (попытка ${attempt + 1})`);
-        await new Promise(resolve => setTimeout(resolve, 5000));
-        continue; // повторяем
-      }
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
 
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
-      }
-
-      return response; // успех
-    } catch (error) {
-      if (attempt < retries) {
-        console.log(`Ошибка сети. Повтор через 1 сек... (осталось ${retries - attempt - 1})`);
-        await new Promise(resolve => setTimeout(resolve, 1000));
-      } else {
-        throw error;
+        return response;
+      } catch (error) {
+        if (attempt < retries) {
+          console.log(`Ошибка сети. Повтор через 1 сек... (осталось ${retries - attempt - 1})`);
+          await new Promise(r => setTimeout(r, 1000));
+        } else {
+          throw error;
+        }
       }
     }
   }
+
+  // Для всех остальных API (Steam, RAWG и т.д.) — прямой запрос
+  const response = await fetch(url, options);
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}`);
+  }
+  return response;
 }
 
 // ====================
@@ -2177,4 +2187,5 @@ document.addEventListener('click', (e) => {
         window.innerWidth < 1024) {
         sidebar.classList.remove('active');
     }
+
 });
