@@ -61,7 +61,7 @@ let currentUploadFile = null;
 // ====================
 // УТИЛИТЫ ДЛЯ API
 // ====================
-const BGG_PROXY_URL = 'https://game-tracker-steel.vercel.app/api/bgg?url=';
+const BGG_PROXY_URL = 'https://game-tracker-uux5.vercel.app/api/bgg?url=';
 
 async function fetchWithRetry(url, options = {}, retries = 3) {
   // Используем собственный прокси ТОЛЬКО для BoardGameGeek
@@ -2186,6 +2186,7 @@ document.addEventListener('click', (e) => {
     }
 
 });
+
 
 
 
