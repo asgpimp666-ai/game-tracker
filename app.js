@@ -39,10 +39,7 @@ const firebaseConfig = {
 const API_CONFIG = {
     IMGBB: "a8e8e6c1e0a8e8e6c1e0a8e8e6c1e0a8",
     RAWG_ALTERNATIVE: "3d5f4e3a7d3d4b6d8e5f6c7a8b9c0d1e2",
-    BOARDGAME_GEEK_TOKEN: "455fab85-6830-471d-94ed-e71c059fbea3", // Ваш токен
-    CORS_PROXY: "https://api.allorigins.win/raw?url=",
-    CORS_PROXY_2: "https://corsproxy.io/?",
-    STEAM_API: null
+    BOARDGAME_GEEK_TOKEN: "455fab85-6830-471d-94ed-e71c059fbea3"
 };
 
 // Инициализация
@@ -2189,3 +2186,4 @@ document.addEventListener('click', (e) => {
     }
 
 });
+
